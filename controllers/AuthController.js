@@ -16,10 +16,10 @@ module.exports = {
 			if(!user || !passwordsEqual)
 				return res.status(404).send({message:'Wrong email or password'});
 
-			const iat = Date.now();
-			const token = jwt.sign({_id: user._id, iat}, jwt_secret, {expiresIn:'7d', noTimestamp: true});
+			const ts = Date.now();
+			const token = jwt.sign({_id: user._id, ts}, jwt_secret, {noTimestamp: true});
 			if(user.tokens.length >= 5) user.tokens.shift();
-			user.tokens.push(iat);
+			user.tokens.push(ts);
 			await user.save();
 			res.status(200).send({message:'Login successful', data: token});
 		} catch(error) {
