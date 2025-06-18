@@ -1,0 +1,32 @@
+
+const mongoose = require('mongoose');
+
+const UserSchema = new mongoose.Schema(
+	{
+		first_name: {
+			type: String,
+			required: [true,'First name cannot be empty']
+		},
+		last_name: {
+			type: String,
+		},
+		email: {
+			type: String,
+			unique: true,
+			required: [true,'Email cannot be empty']
+		},
+		password: {
+			type: String,
+		},
+		role: {
+			type: String,
+			enum: ['user','admin']
+		},
+		tokens: [],
+	},
+	{
+		timestamps: true
+	}
+)
+
+module.exports = mongoose.model('User', UserSchema);
