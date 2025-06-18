@@ -12,7 +12,12 @@ module.exports = {
 			res.status(500).send({message:'Internal Server Error',error});
 		});
 	},
-	getInfo: (req,res,next) => {
-
+	getInfo: async (req,res,next) => {
+		try {
+			res.status(200).send({message:'OK',data:req.user})
+		} catch(error) {
+			console.log(error);
+			res.status(500).send({message:'Internal Server Error',error});
+		}
 	}
 };
