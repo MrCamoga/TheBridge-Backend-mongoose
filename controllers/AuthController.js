@@ -1,8 +1,6 @@
 const User = require('../models/User');
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { jwt_secret } = require('../config/');
 
 module.exports = {
 	login: async (req,res,next) => {
@@ -17,7 +15,7 @@ module.exports = {
 				return res.status(404).send({message:'Wrong email or password'});
 
 			const ts = Date.now();
-			const token = jwt.sign({_id: user._id, ts}, jwt_secret, {noTimestamp: true});
+			const token = jwt.sign({_id: user._id, ts}, process.env.JWT_SECRET, {noTimestamp: true});
 			if(user.tokens.length >= 5) user.tokens.shift();
 			user.tokens.push(ts);
 			await user.save();
@@ -27,7 +25,16 @@ module.exports = {
 			res.status(500).send({message:'Internal Server Error', error});
 		}
 	},
-	logout: (req,res,next) => {
-
+	logout: async (req,res,next) => {
+		try {
+			const { ts } = jwt.decode(req.headers.authorization, process.env.JWT_SECRET);
+			await User.findByIdAndUpdate(req.user._id, {
+				$pull: { tokens: ts }
+			});
+			res.status(200).send({message:'Logout successful'});
+		} catch(error) {
+			console.log(error);
+			res.status(500).send({message:'Internal Server Error'})
+		}
 	}
 };
