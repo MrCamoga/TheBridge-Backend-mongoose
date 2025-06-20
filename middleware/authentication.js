@@ -1,17 +1,17 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const { UnauthorizedError, ForbiddenError } = require('../errors/httpErrors');
+
 module.exports = {
-	isAuthor: Model => async (req,res,next) => {
+	canModify: Model => async (req,res,next) => {
 		try {
 			const document = await Model.findById(req.params.id);
-			if(document.userId.toString() !== req.user._id.toString())
-				return res.status(403).send({message:'Access forbidden'});
+			if(req.user.role !== 'admin' && document.userId.toString() !== req.user._id.toString())
+				throw new ForbiddenError('Access Forbidden');
 			req.document = document;
 			next();
 		} catch(error) {
-			console.log(error);
-			res.status(500).send({message:'Internal Server Error',error});
 			next(error);
 		}
 	},
@@ -20,18 +20,17 @@ module.exports = {
 		try {
 			const token = req.headers.authorization;
 			if(!token) {
-				return res.status(401).send({message:'Unauthorized - JWT token missing'});
+				throw new UnauthorizedError('JWT missing');
 			}
 			const { _id, ts } = jwt.verify(token,process.env.JWT_SECRET);
 			const user = await User.findOne({ _id, tokens: ts });
 			if(!user) {
-				return res.status(401).send({message:'Unauthorized - invalid token'});
+				throw new UnauthorizedError('Invalid JWT');
 			}
 			req.user = user;
 			next();
 		} catch(error) {
-			console.log(error);
-			res.status(500).send({message:'Internal Server Error', error});
+			next(error);
 		}
 	}
 };
