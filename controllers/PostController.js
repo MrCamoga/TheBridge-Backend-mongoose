@@ -63,6 +63,20 @@ module.exports = {
 		}
 	},
 
+	async getPostComments(req,res,next) {
+		try {
+			const { page = 1, limit = 10 } = req.query;
+			if(page < 1 || limit < 1) throw new BadRequestError('Invalid pagination parameters');
+
+			const post = await Post.findById(req.params.id);
+			if(!post) throw new NotFoundError('Post cannot be found');
+			const comments = await Comment.find({postId: post._id }).skip((page-1)*limit).limit(limit).sort({createdAt: -1});
+			res.status(200).send({message:'OK',data:comments});
+		} catch(error) {
+			next(error);
+		}
+	},
+
 	async likePost(req,res,next) {
 		try {
 			const post = await Post.findById(req.params.id);
