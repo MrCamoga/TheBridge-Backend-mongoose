@@ -4,9 +4,9 @@ const User = require('../models/User');
 const { UnauthorizedError, ForbiddenError } = require('../errors/httpErrors');
 
 module.exports = {
-	canModify: Model => async (req,res,next) => {
+	canModify: model => async (req,res,next) => {
 		try {
-			const document = await Model.findById(req.params.id);
+			const document = await require(`../models/${model}`).findById(req.params.id);
 			if(req.user.role !== 'admin' && document.userId.toString() !== req.user._id.toString())
 				throw new ForbiddenError('Access Forbidden');
 			req.document = document;
