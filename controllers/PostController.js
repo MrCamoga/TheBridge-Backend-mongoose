@@ -2,9 +2,13 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const User = require('../models/User');
 
+const { BadRequestError, NotFoundError } = require('../errors/httpErrors');
+
 module.exports = {
 	getAllPosts(req,res,next) {
-		Post.find().populate('userId','first_name last_name').then(posts => {
+		const { page = 1, limit = 10 } = req.query;
+		if(page < 1 || limit < 1) throw new BadRequestError('Invalid pagination parameters');
+		Post.find().skip((page-1)*limit).limit(limit).sort({createdAt: -1}).populate('userId','first_name last_name').then(posts => {
 			/*posts.forEach(post => {
 				post.comments = Comment.find({where:{postId:post._id}});
 			});*/
