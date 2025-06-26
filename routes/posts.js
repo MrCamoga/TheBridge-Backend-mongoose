@@ -10,7 +10,7 @@ router.post('/:id/comments', authenticate, CommentController.createComment);
 router.post('/:id/likes', authenticate, Controller.likePost);
 router.delete('/:id/likes', authenticate, Controller.unlikePost);
 
-router.get('/feed', Controller.getAllPosts);
+router.get('/', Controller.getAllPosts);
 router.get('/title/:title', Controller.getPostByTitle);
 router.get('/:id', Controller.getPostById);
 router.post('/', authenticate, multer.single('image'), Controller.createPost);
