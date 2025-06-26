@@ -17,6 +17,10 @@ const PostSchema = new mongoose.Schema(
 		likes: [{
 			type: mongoose.Schema.ObjectId,
 			ref: 'User'
+		}],
+		comments: [{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Comment'
 		}]
 	},
 	{
@@ -25,7 +29,7 @@ const PostSchema = new mongoose.Schema(
 );
 
 PostSchema.index({
-	title: 'title'
+	title: 'text'
 });
 
 module.exports = mongoose.model('Post', PostSchema);

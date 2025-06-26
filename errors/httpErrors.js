@@ -7,7 +7,7 @@ class HttpError extends Error {
 
 const createHttpError = (error,status) => {
 	return class extends HttpError {
-		constructor(message, status) {
+		constructor(message) {
 			super(message, status);
 			this.name = error+"Error";
 			Error.captureStackTrace(this, this.constructor);
