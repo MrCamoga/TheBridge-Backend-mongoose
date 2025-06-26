@@ -2,7 +2,9 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const User = require('../models/User');
 
-const { BadRequestError, NotFoundError } = require('../errors/httpErrors');
+const { BadRequestError, NotFoundError, InternalServerError } = require('../errors/httpErrors');
+
+const fs = require('fs');
 
 module.exports = {
 	getAllPosts(req,res,next) {
@@ -53,6 +55,10 @@ module.exports = {
 	},
 	deletePost(req,res,next) {
 		Post.findByIdAndDelete(req.params.id).then(post => {
+			if(post.image)
+				fs.unlink('media/'+post.image, (err) => {
+					if(err) throw new InternalServerError('Error deleting media file');
+				});
 			res.status(200).send({message:'Post deleted', data: post});
 		}).catch(next);
 	},
