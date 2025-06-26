@@ -38,7 +38,7 @@ module.exports = {
 		}).catch(next);
 	},
 	createPost(req,res,next) {
-		Post.create({...req.body, userId: req.user._id, likes: []}).then(post => {
+		Post.create({...req.body, userId: req.user._id, likes: [], image: req.file?.filename }).then(post => {
 			res.status(201).send({message:'Post created successfully', data: post});
 		}).catch(next);
 	},
