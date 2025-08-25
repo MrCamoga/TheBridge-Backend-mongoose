@@ -6,5 +6,6 @@ const { authenticate } = require('../middleware/authentication');
 
 router.post('/login', controller.login);
 router.delete('/logout', authenticate, controller.logout);
+router.get('/verify/:token', controller.verify);
 
 module.exports = router;

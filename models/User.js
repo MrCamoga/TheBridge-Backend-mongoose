@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema(
 			type: String,
 			enum: ['user','admin']
 		},
+		verified: {
+			type: Boolean,
+			default: false
+		},
 		tokens: [],
 	},
 	{

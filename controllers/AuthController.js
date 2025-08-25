@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { NotFoundError, BadRequestError } = require('../errors/httpErrors');
+const { UnauthorizedError, NotFoundError, BadRequestError } = require('../errors/httpErrors');
 
 module.exports = {
 	login: async (req,res,next) => {
@@ -34,6 +34,21 @@ module.exports = {
 			});
 			res.status(200).send({message:'Logout successful'});
 		} catch(error) {
+			next(error);
+		}
+	},
+	verify: async (req,res,next) => {
+		try {
+			try {
+				var { _id } = jwt.verify(req.params.token, process.env.JWT_SECRET);
+			} catch (error) {
+				throw new UnauthorizedError('Verification token invalid');
+			}
+			await User.findByIdAndUpdate(_id, {
+				verified: true
+			});
+			res.status(201).send({message:'Email verified'});
+		} catch (error) {
 			next(error);
 		}
 	}
