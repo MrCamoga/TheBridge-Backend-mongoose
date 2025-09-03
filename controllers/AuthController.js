@@ -7,11 +7,11 @@ const { UnauthorizedError, NotFoundError, BadRequestError } = require('../errors
 module.exports = {
 	login: async (req,res,next) => {
 		try {
-			const { email, password } = req.body;
-			if(!email || !password)
+			const { username, password } = req.body;
+			if(!username || !password)
 				throw new BadRequestError('Missing email or password');
 
-			const user = await User.findOne({email});
+			const user = await User.findOne({ $or: [{email: username},{username}]});
 			const passwordsEqual = bcrypt.compareSync(password, user?.password ?? '$2a$10$j.NJYLehXvr/ehpgoTvQ0OO2N8as45Iv0JgZbSPf6lrpUmUAbFhfS');
 			if(!user || !passwordsEqual)
 				throw new NotFoundError('Wrong email or password');
