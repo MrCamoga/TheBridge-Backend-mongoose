@@ -2,13 +2,19 @@ const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema(
 	{
-		first_name: {
+		screenname: {
 			type: String,
-			required: [true,'First name cannot be empty']
+			required: [true,'Screen name cannot be empty']
 		},
-		last_name: {
+		username: {
 			type: String,
-			required: [true,'Last name cannot be empty']
+			unique: true,
+			required: [true,'Username cannot be empty'],
+			minlength: [4,'Username must be at least 4 characters long'],
+			maxlength: [24,'Username must be at most 24 characters long'],
+		},
+		avatar: {
+			type: String
 		},
 		email: {
 			type: String,
@@ -37,6 +43,7 @@ const UserSchema = new mongoose.Schema(
 UserSchema.set('toJSON', {
 	transform(doc, ret) {
 		delete ret.password;
+		delete ret.tokens;
 		return ret;
 	}
 });

@@ -3,11 +3,11 @@ const path = require('path');
 
 const storage = multer.diskStorage({
 	destination: (req,file,cb) => {
-		console.log(file)
+		console.log(file.fieldname)
 		cb(null,'media/');
 	},
 	filename: (req,file,cb) => {
-		const name = Date.now() + '-' + Math.floor(Math.random()*0x10000).toString(16) + path.extname(file.originalname);
+		const name = (req.user ? req.user._id + '-':'') + Date.now() + '-' + Math.floor(Math.random()*0x10000).toString(16) + path.extname(file.originalname);
 		console.log(name, file)
 		cb(null, name);
 	}
@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 
 
 const fileFilter = (req,file,cb) => {
-	const allowedTypes = ['webp','png','jpeg','jpg','gif'];
+	const allowedTypes = ['webp','png','jpeg','jpg','gif','jfif'];
 	const ext = path.extname(file.originalname).slice(1).toLowerCase();
 	if(allowedTypes.includes(ext))
 		cb(null, true);
