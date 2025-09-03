@@ -14,8 +14,8 @@ module.exports = {
 		.skip((page-1)*limit)
 		.limit(limit)
 		.sort({createdAt: -1})
-		.populate('userId','first_name last_name')
-		.populate({path: 'comments', select: 'text', populate: { path: 'userId', select: 'first_name last_name'}})
+		.populate('userId','screenname username')
+		.populate({path: 'comments', select: 'text', populate: { path: 'userId', select: 'screenname username'}})
 		.then(posts => {
 			res.status(200).send({message:'OK', data: posts});
 		}).catch(next);
@@ -26,14 +26,14 @@ module.exports = {
 				$search: req.params.title
 			}
 		})
-		.populate('userId','first_name last_name')
+		.populate('userId','screenname username')
 		.then(posts => {
 			res.status(200).send({message:'OK', data: posts});
 		}).catch(next);
 	},
 	getPostById(req,res,next) {
 		Post.findById(req.params.id)
-		.populate('userId','first_name last_name')
+		.populate('userId','screenname username')
 		.then(post => {
 			if(post) res.status(200).send({message: 'OK', data: post});
 			else res.status(404).send({message:'Post not found'});
