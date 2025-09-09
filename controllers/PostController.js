@@ -14,7 +14,7 @@ module.exports = {
 		.skip((page-1)*limit)
 		.limit(limit)
 		.sort({createdAt: -1})
-		.populate('userId','screenname username')
+		.populate('userId','screenname username avatar')
 		.populate({path: 'comments', select: 'text', populate: { path: 'userId', select: 'screenname username'}})
 		.then(posts => {
 			res.status(200).send({message:'OK', data: posts});
@@ -33,16 +33,21 @@ module.exports = {
 	},
 	getPostById(req,res,next) {
 		Post.findById(req.params.id)
-		.populate('userId','screenname username')
+		.populate('userId','screenname username avatar')
+		.populate({path:'comments', populate: {path:'userId', select: "screenname username avatar"}})
 		.then(post => {
 			if(post) res.status(200).send({message: 'OK', data: post});
 			else res.status(404).send({message:'Post not found'});
 		}).catch(next);
 	},
-	createPost(req,res,next) {
-		Post.create({...req.body, userId: req.user._id, likes: [], image: req.file?.filename }).then(post => {
+	async createPost(req,res,next) {
+		try {
+			let post = await Post.create({...req.body, userId: req.user._id, likes: [], image: req.file?.filename });
+			post = await post.populate('userId', 'screenname username avatar');
 			res.status(201).send({message:'Post created successfully', data: post});
-		}).catch(next);
+		} catch(error) {
+			next(error);
+		}
 	},
 	updatePost(req,res,next) {
 		const { title, text } = req.body;

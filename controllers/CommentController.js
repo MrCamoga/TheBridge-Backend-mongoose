@@ -10,9 +10,10 @@ module.exports = {
 			const post = await Post.findById(req.params.id);
 			if(!post) throw new NotFoundError('Post cannot be found');
 			const { text } = req.body;
-			const comment = await Comment.create({text, userId: req.user._id, postId: post._id });
+			let comment = await Comment.create({text, userId: req.user._id, postId: post._id });
 			post.comments.push(comment._id);
 			await post.save();
+			comment = await comment.populate('userId','screenname username avatar');
 			res.status(201).send({message:'Comment posted successfully',data:comment});
 		} catch(error) {
 			next(error);
