@@ -2,9 +2,9 @@ const router = require('express').Router();
 
 const { createUser, getInfo, getUserInfo } = require('../controllers/UserController');
 const { authenticate } = require('../middleware/authentication');
-const multer = require('../middleware/upload');
+const uploadImage = require('../middleware/upload');
 
-router.post('/', multer.single('avatar'), createUser);
+router.post('/', uploadImage(multer => multer.single('avatar')), createUser);
 router.get('/:username', getUserInfo);
 router.get('/', authenticate, getInfo);
 
