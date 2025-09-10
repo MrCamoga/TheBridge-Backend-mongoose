@@ -23,7 +23,7 @@ module.exports = {
 			}
 			res.status(201).send({message:'User registed sucessfully', data: user});
 		} catch(error) {
-			if(error.code == 11000) error = new ConflictError('Email already registered');
+			if(error.code == 11000) error = new ConflictError('Email or username already registered');
 			next(error);
 		}
 	},
