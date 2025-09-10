@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false
 		},
+		posts: [{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Post'
+		}],
 		tokens: [],
 	},
 	{
