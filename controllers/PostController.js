@@ -44,6 +44,8 @@ module.exports = {
 		try {
 			let post = await Post.create({...req.body, userId: req.user._id, likes: [], image: req.file?.filename });
 			post = await post.populate('userId', 'screenname username avatar');
+			req.user.posts.push(post._id);
+			await req.user.save();
 			res.status(201).send({message:'Post created successfully', data: post});
 		} catch(error) {
 			next(error);
@@ -58,14 +60,19 @@ module.exports = {
 			res.status(200).send({message:'Post updated successfully', data:post});
 		}).catch(next);
 	},
-	deletePost(req,res,next) {
-		Post.findByIdAndDelete(req.params.id).then(post => {
+	async deletePost(req,res,next) {
+		try {
+			const post = await Post.findByIdAndDelete(req.params.id);
 			if(post.image)
 				fs.unlink('media/'+post.image, (err) => {
 					if(err) throw new InternalServerError('Error deleting media file');
 				});
+			req.user.posts.remove(post._id);
+			await req.user.save();
 			res.status(200).send({message:'Post deleted', data: post});
-		}).catch(next);
+		} catch (error) {
+			next(error);
+		}
 	},
 
 	async likePost(req,res,next) {
